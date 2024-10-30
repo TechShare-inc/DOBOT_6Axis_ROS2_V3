@@ -5,7 +5,7 @@ from launch_ros.actions import Node
 from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinsubstitution
+from launch.substitutions import PathJoinSubstitution
 import xacro
 import yaml
 
@@ -35,7 +35,7 @@ def generate_launch_description():
     robot_name_in_model = f'{mane}_robot'
     package_name = 'cra_description'
     urdf_name = f"{mane}_robot.xacro"
-    world_file_path = PathJoinsubstitution([
+    world_file_path = PathJoinSubstitution([
         get_package_share_directory('dobot_gazebo'), 
         'worlds', 
         'ur10.world'
