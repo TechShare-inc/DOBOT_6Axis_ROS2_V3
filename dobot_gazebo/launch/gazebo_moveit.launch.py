@@ -5,6 +5,7 @@ from launch_ros.actions import Node
 from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import PathJoinsubstitution
 import xacro
 import yaml
 
@@ -34,10 +35,15 @@ def generate_launch_description():
     robot_name_in_model = f'{mane}_robot'
     package_name = 'cra_description'
     urdf_name = f"{mane}_robot.xacro"
+    world_file_path = PathJoinsubstitution([
+        get_package_share_directory('dobot_gazebo'), 
+        'worlds', 
+        'ur10.world'
+    ])
     gazebo = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(
-                    get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),
-                launch_arguments={}.items(),
+                    get_package_share_directory('ros_gz_sim'), 'launch'), '/gz_sim.launch.py']),
+                launch_arguments=[('gz_args', world_file_path)],
              )
     cra_description_path = os.path.join(
         get_package_share_directory(package_name))
@@ -58,19 +64,18 @@ def generate_launch_description():
         parameters=[robot_description]
     )
 
-    spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',
+    spawn_entity = Node(package='ros_gz_sim', executable='create',
                         arguments=['-topic', 'robot_description',
-                                   '-entity', robot_name_in_model],
+                                   '-name', robot_name_in_model],
                         output='screen')
     
-    # # 关节状态发布器
+    # コントローラの起動
     load_joint_state_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
              'joint_state_broadcaster'],
         output='screen'
     )
 
-    # # 路径执行控制器
     load_joint_trajectory_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
              f'{mane}_group_controller'],

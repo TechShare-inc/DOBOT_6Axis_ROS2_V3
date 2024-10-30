@@ -495,14 +495,10 @@
         </joint>
     </ros2_control>
 
-
     <gazebo>
-        <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+        <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
             <parameters>$(find cr16_moveit)/config/ros2_controllers.yaml</parameters>
             <robot_param_node>robot_state_publisher</robot_param_node>
         </plugin>
     </gazebo>
-
-
-
 </robot>
